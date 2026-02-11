@@ -1,0 +1,25 @@
+// Esto define el generador de cliente (el traductor para TypeScript)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Esto conecta con Supabase usando las variables de tu .env
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// --- TUS TABLAS (MODELOS) ---
+
+// Modelo de Producto para el inventario
+model Product {
+  id          String   @id @default(uuid()) // ID único (ej: "550e8400-e29b...")
+  sku         String   @unique              // Código de barras (no se puede repetir)
+  name        String
+  description String?                       // Puede estar vacío (opcional)
+  price       Float    @default(0)
+  stock       Int      @default(0)
+  createdAt   DateTime @default(now())      // Se rellena solo al crear
+  updatedAt   DateTime @updatedAt           // Se actualiza solo al editar
+}
