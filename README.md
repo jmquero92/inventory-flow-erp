@@ -1,43 +1,36 @@
-# 📦 Inventory Flow ERP
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-> **Enterprise-grade Order Management System (OMS)** designed to migrate legacy retail operations from manual Excel/JSON workflows to a scalable, ACID-compliant architecture.
+## Getting Started
 
-![Status](https://img.shields.io/badge/Status-Active_Development-success)
-![Tech](https://img.shields.io/badge/Stack-Next.js_14_|_PostgreSQL_|_Python-blue)
+First, run the development server:
 
-## 🎯 The Business Problem
-Many retail businesses (SMBs) suffer from **"Excel Hell"**:
-- Inventory data is scattered across local files (`stock.json`, `.xlsx`).
-- No "Single Source of Truth", leading to overselling and stock discrepancies.
-- Manual data entry consumes 10+ hours/week.
-- Lack of audit trails (who changed the price and when?).
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-## 🛠 The Engineering Solution
-**Inventory Flow** is a full-stack platform that enforces data integrity and automates the supply chain:
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-* **ACID Compliance:** Migrating from file-based storage to **PostgreSQL** to ensure transaction safety.
-* **AI-Powered Ingestion:** Using LLMs (OpenAI/Local Models) to normalize inconsistent vendor data from raw Excel files (e.g., mapping "Jarrón Az." to "Blue Vase Variant").
-* **Real-time Dashboard:** A Next.js App Router interface for warehouse management.
-* **Hybrid Architecture:** - **Frontend/API:** Next.js (TypeScript).
-    - **Data Processing:** Python scripts for heavy ETL tasks.
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## 🏗 Tech Stack
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-| Domain | Technology | Reason |
-| :--- | :--- | :--- |
-| **Core** | Next.js 14 (App Router) | Server Actions for type-safe backend logic. |
-| **Language** | TypeScript | Strict typing to prevent runtime errors in financial calculations. |
-| **Database** | PostgreSQL (Supabase) | Relational data integrity for complex inventory schemas. |
-| **ORM** | Prisma / Drizzle | Type-safe database queries. |
-| **AI / ML** | OpenAI API / Python | Data normalization and automated SEO description generation. |
-| **Styling** | Tailwind CSS + Shadcn/ui | Accessible, enterprise-ready UI components. |
+## Learn More
 
-## 🚀 Roadmap
+To learn more about Next.js, take a look at the following resources:
 
-- [ ] **Phase 1: Foundation** - Database Schema Design & Seed Scripts (Migrating from JSON).
-- [ ] **Phase 2: Core Logic** - Inventory Movements & Audit Logging.
-- [ ] **Phase 3: The Dashboard** - Secure Admin Interface implementation.
-- [ ] **Phase 4: AI Integration** - Automated "Dirty Data" Cleaning Pipeline.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
----
-*Developed by [José Manuel Quero](https://github.com/jmquero92) - Focusing on High-Performance Web Architecture.*
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
