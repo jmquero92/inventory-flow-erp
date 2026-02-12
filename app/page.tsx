@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/db"
 import { addProduct, deleteProduct } from "./actions"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
+import { Input } from "@/Components/ui/input"
+import { Label } from "@/Components/ui/label"
+import { Button } from "@/Components/ui/button"
 import { Trash2 } from "lucide-react"
+import { EditProductModal } from "@/Components/EditProductModal"
+import { Search } from "@/Components/Search" // 👈 Importamos el buscador
+
 import {
   Table,
   TableBody,
@@ -11,21 +14,36 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/Components/ui/table"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/Components/ui/card"
 
-export default async function Home() {
+// 1. Recibimos los parámetros de búsqueda (searchParams)
+export default async function Home(props: {
+  searchParams?: Promise<{
+    query?: string;
+  }>;
+}) {
+  const searchParams = await props.searchParams;
+  const query = searchParams?.query || '';
+
+  // 2. Modificamos la consulta para filtrar
   const products = await prisma.product.findMany({
+    where: {
+      OR: [
+        { name: { contains: query, mode: 'insensitive' } },
+        { sku: { contains: query, mode: 'insensitive' } },
+      ],
+    },
     orderBy: { createdAt: 'desc' }
   })
 
-  // Cálculos para el Dashboard
+  // Cálculos para el Dashboard (Se recalculan con el filtro)
   const totalProductos = products.length
   const valorTotal = products.reduce((acc, p) => acc + (p.price * p.stock), 0)
   const productosSinStock = products.filter(p => p.stock === 0).length
@@ -35,11 +53,11 @@ export default async function Home() {
       <div className="w-full max-w-5xl space-y-8">
         <h1 className="text-3xl font-bold text-slate-900 text-center">Inventory Flow ERP</h1>
 
-        {/* 1. DASHBOARD DE RESUMEN */}
+        {/* DASHBOARD */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription>Valor Total</CardDescription>
+              <CardDescription>Valor Inventario (Filtrado)</CardDescription>
               <CardTitle className="text-2xl text-blue-600">
                 {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(valorTotal)}
               </CardTitle>
@@ -47,7 +65,7 @@ export default async function Home() {
           </Card>
           <Card>
             <CardHeader className="pb-2">
-              <CardDescription>Items Totales</CardDescription>
+              <CardDescription>Items Encontrados</CardDescription>
               <CardTitle className="text-2xl">{totalProductos}</CardTitle>
             </CardHeader>
           </Card>
@@ -59,7 +77,7 @@ export default async function Home() {
           </Card>
         </div>
 
-        {/* 2. FORMULARIO PARA AÑADIR */}
+        {/* FORMULARIO */}
         <Card>
           <CardHeader>
             <CardTitle>Añadir Producto</CardTitle>
@@ -87,11 +105,17 @@ export default async function Home() {
           </CardContent>
         </Card>
 
-        {/* 3. TABLA DE INVENTARIO */}
+        {/* TABLA CON BUSCADOR */}
         <Card>
           <CardHeader>
-            <CardTitle>Inventario Actual</CardTitle>
-            <CardDescription>Gestión de productos y stock en tiempo real.</CardDescription>
+            <div className="flex justify-between items-center">
+              <div>
+                <CardTitle>Inventario Actual</CardTitle>
+                <CardDescription>Gestión de productos y stock.</CardDescription>
+              </div>
+              {/* 👇 Aquí está el Buscador */}
+              <Search />
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
@@ -106,34 +130,42 @@ export default async function Home() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-medium">{product.sku}</TableCell>
-                    <TableCell>{product.name}</TableCell>
-                    <TableCell>
-                      {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.price)}
-                    </TableCell>
-                    <TableCell>{product.stock} u.</TableCell>
-                    <TableCell>
-                      {product.stock > 0 ? (
-                        <span className="text-green-600 font-bold">En Stock</span>
-                      ) : (
-                        <span className="text-red-600 font-bold">Agotado</span>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {/* Formulario de borrado - Necesita que deleteProduct esté en actions.ts */}
-                      <form action={async () => {
-                        'use server'
-                        await deleteProduct(product.id)
-                      }}>
-                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </form>
+                {products.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center h-24 text-gray-500">
+                      No se encontraron productos con "{query}"
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  products.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="font-medium">{product.sku}</TableCell>
+                      <TableCell>{product.name}</TableCell>
+                      <TableCell>
+                        {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(product.price)}
+                      </TableCell>
+                      <TableCell>{product.stock} u.</TableCell>
+                      <TableCell>
+                        {product.stock > 0 ? (
+                          <span className="text-green-600 font-bold">En Stock</span>
+                        ) : (
+                          <span className="text-red-600 font-bold">Agotado</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right flex justify-end gap-2 items-center">
+                        <EditProductModal product={product} />
+                        <form action={async () => {
+                          'use server'
+                          await deleteProduct(product.id)
+                        }}>
+                          <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </form>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </CardContent>
