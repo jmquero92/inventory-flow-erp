@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Inventory Flow ERP
 
-## Getting Started
+Inventory Flow is a professional inventory management platform built with the modern Next.js stack. The system provides full control over products, stock movement traceability, and real-time visualization of key performance indicators (KPIs).
+Live Demo
 
-First, run the development server:
+Check out the live application here: [https://inventory-flow-erp.vercel.app/]
+Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+    Framework: Next.js 15 (App Router)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    Language: TypeScript
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+    Database: PostgreSQL (Supabase)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+    ORM: Prisma
 
-## Learn More
+    Styling: Tailwind CSS
 
-To learn more about Next.js, take a look at the following resources:
+    UI Components: Shadcn UI
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    Deployment: Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Core Features
+Dashboard & KPIs
 
-## Deploy on Vercel
+Immediate visualization of total inventory value and physical stock volume. Indicators update dynamically based on filters or stock changes.
+Product Management (CRUD)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Complete control over the product catalog, including creating, reading, updating, and deleting records with database persistence.
+Advanced Search
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Optimized search system using URL Search Params and debouncing techniques to filter by name or SKU without overloading the server.
+Stock Traceability & Logs
+
+Automatic logging of every inventory movement. The system detects stock variances and generates an activity history detailing inflows and outflows.
+Pagination & Performance
+
+Server-side pagination implementation to ensure smooth performance even with large data volumes.
+Installation & Setup
+
+    Clone the repository:
+    git clone [YOUR_REPO_URL]
+
+    Install dependencies:
+    npm install
+
+    Configure environment variables (.env):
+    DATABASE_URL="your_supabase_url"
+
+    Run Prisma migrations:
+    npx prisma generate
+    npx prisma db push
+
+    Start the development server:
+    npm run dev
+
+2. Cambia los datos de prueba a Inglés
+
+En las empresas de fuera valoran mucho la atención al detalle. Si entran en tu demo y ven "Zapatillas" o "Caja de Té", se nota que es un proyecto local.
+
+    Entra en tu base de datos (Supabase o vía tu propia App).
+
+    Cambia los nombres a cosas como: "Wireless Headphones", "Mechanical Keyboard", "Organic Coffee Beans".
+
+3. El Perfil de GitHub
+
+Asegúrate de que tu biografía de GitHub esté en inglés. Algo sencillo como:
+
+    "Fullstack Developer passionate about building scalable web applications with Next.js, TypeScript, and PostgreSQL."
