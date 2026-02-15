@@ -39,7 +39,7 @@ Server-side pagination implementation to ensure smooth performance even with lar
 Installation & Setup
 
     Clone the repository:
-    git clone [YOUR_REPO_URL]
+    git clone [https://github.com/jmquero92/inventory-flow-erp]
 
     Install dependencies:
     npm install
@@ -54,16 +54,3 @@ Installation & Setup
     Start the development server:
     npm run dev
 
-2. Cambia los datos de prueba a Inglés
-
-En las empresas de fuera valoran mucho la atención al detalle. Si entran en tu demo y ven "Zapatillas" o "Caja de Té", se nota que es un proyecto local.
-
-    Entra en tu base de datos (Supabase o vía tu propia App).
-
-    Cambia los nombres a cosas como: "Wireless Headphones", "Mechanical Keyboard", "Organic Coffee Beans".
-
-3. El Perfil de GitHub
-
-Asegúrate de que tu biografía de GitHub esté en inglés. Algo sencillo como:
-
-    "Fullstack Developer passionate about building scalable web applications with Next.js, TypeScript, and PostgreSQL."
