@@ -1,22 +1,31 @@
-// Esto le dice a Prisma que genere el cliente de JavaScript
 generator client {
   provider = "prisma-client-js"
 }
 
-// Esto configura la conexión con Supabase
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
-// Este es tu modelo de datos (La tabla de Productos)
 model Product {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
-  sku       String   @unique
+  sku       String     @unique
   price     Float
   stock     Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  
+  // Relación con los logs: Un producto puede tener muchos movimientos
+  logs      StockLog[] 
+}
+
+model StockLog {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  change    Int      // Ejemplo: +5 o -3
+  reason    String   // Ejemplo: "Venta", "Reposición", "Ajuste manual"
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

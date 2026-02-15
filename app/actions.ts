@@ -3,15 +3,28 @@
 import { prisma } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
-// 1. Acción para CREAR
+// 1. Acción para CREAR (Ahora con Log inicial)
 export async function addProduct(formData: FormData) {
   const name = formData.get('name') as string
   const sku = formData.get('sku') as string
   const price = parseFloat(formData.get('price') as string)
   const stock = parseInt(formData.get('stock') as string)
 
-  await prisma.product.create({
-    data: { name, sku, price, stock }
+  // Usamos una transacción: O se crean los dos, o ninguno
+  await prisma.$transaction(async (tx) => {
+    // 1. Crear el producto
+    const newProduct = await tx.product.create({
+      data: { name, sku, price, stock }
+    })
+
+    // 2. Crear el log de entrada inicial
+    await tx.stockLog.create({
+      data: {
+        productId: newProduct.id,
+        change: stock,
+        reason: "Stock inicial"
+      }
+    })
   })
 
   revalidatePath('/')
@@ -26,16 +39,42 @@ export async function deleteProduct(id: string) {
   revalidatePath('/')
 }
 
-// 3. Acción para EDITAR (La nueva)
+// 3. Acción para EDITAR (Ahora detecta cambios y guarda LOGS)
 export async function updateProduct(id: string, formData: FormData) {
   const name = formData.get('name') as string
   const sku = formData.get('sku') as string
   const price = parseFloat(formData.get('price') as string)
   const stock = parseInt(formData.get('stock') as string)
 
-  await prisma.product.update({
+  // PASO 1: Buscamos el producto ANTES de cambiarlo para saber cuánto tenía
+  const oldProduct = await prisma.product.findUnique({
     where: { id },
-    data: { name, sku, price, stock }
+    select: { stock: true } // Solo nos interesa el stock antiguo
+  })
+
+  if (!oldProduct) throw new Error("Producto no encontrado")
+
+  // PASO 2: Calculamos la diferencia (Nuevo - Viejo)
+  const diff = stock - oldProduct.stock
+
+  // PASO 3: Guardamos todo en una transacción
+  await prisma.$transaction(async (tx) => {
+    // A. Actualizamos el producto
+    await tx.product.update({
+      where: { id },
+      data: { name, sku, price, stock }
+    })
+
+    // B. Si el stock ha cambiado, creamos un registro en el historial
+    if (diff !== 0) {
+      await tx.stockLog.create({
+        data: {
+          productId: id,
+          change: diff,
+          reason: diff > 0 ? "Entrada de stock (Manual)" : "Salida de stock (Manual)"
+        }
+      })
+    }
   })
 
   revalidatePath('/')
